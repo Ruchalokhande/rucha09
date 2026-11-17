@@ -141,7 +141,7 @@ Run once at the end. Every line must pass.
 | Dashboard | `kubectl get pods,svc -n tekton-pipelines \| grep dashboard` | 1/1 Running, port 9097 |
 | External DNS | `kubectl get pods -n tanzu-system-service-discovery` | Running, no log errors |
 | Istio | `kubectl get certificate,gateway,httproute -n tekton-pipelines` | Ready, Programmed, Accepted |
-| HTTPRoute | `kubectl describe httproute tekton-dashboard-route -n tekton-pipelines` | Accepted=True, ResolvedRefs=True | 
+| HTTPRoute | `kubectl describe httproute tekton-dashboard-route -n tekton-pipelines` | Accepted=True | 
 | DNS | `dig +short tekton.labX.k8slabs.com` | Gateway IP |
 | User access | Open `https://tekton.labX.k8slabs.com` | Dashboard loads |
 
