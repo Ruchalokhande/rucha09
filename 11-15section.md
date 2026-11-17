@@ -24,7 +24,6 @@ Confirm the deployment name (`kubectl get deployment -n tanzu-system-service-dis
 
 ***Review comment***
 
-
 {
 Note:
 The DNS Entries are created auotmatically
@@ -37,7 +36,7 @@ Expected result: a log line showing the record for `tekton.labX.k8slabs.com` bei
 ### 11.2 Verify the DNS record
 
 ```bash
-nslookup <FQDN>       # Update Domain Name
+nslookup <FQDN>       # Update Domain Name - Eg. tekton.labX.k8slabs.com
 ```
 
 Expected result: the IP printed equals the Gateway address from Section 10.2. Also confirm in Cloudflare that the A record and its TXT ownership record exist.
@@ -85,7 +84,7 @@ kubectl get namespace cicd --show-labels
 kubectl get namespace cicd  -o jsonpath='{.metadata.labels.pod-security\.kubernetes\.io/enforce}{"\n"}'
 ```
 
-Expected result:c`Active`, with `pod-security.kubernetes.io/enforce=privileged` in the labels. / privileged 
+**Expected result:** Namespace status should be `Active`, and the label `pod-security.kubernetes.io/enforce=privileged` should be present.
 
 **Security note:** this label enables privileged capabilities for build workloads. In production, use the least-privilege settings your VKS, BuildKit and Buildpacks implementation and security policy support.
 
