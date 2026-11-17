@@ -12,6 +12,7 @@ kubectl get pods -n tanzu-system-service-discovery
 kubectl logs -n tanzu-system-service-discovery -l app=external-dns --tail=50
 ```
 ***Review comment***
+
 {
 
 Below line confirms that the entries are added successfully
@@ -22,6 +23,7 @@ time="2026-11-13T09:30:53Z" level=info msg="All records are already up to date"
 Confirm the deployment name (`kubectl get deployment -n tanzu-system-service-discovery`) and whether the restart is needed in the validated sequence (TO VERIFY).
 
 ***Review comment***
+
 
 {
 Note:
@@ -45,6 +47,7 @@ Expected result: the IP printed equals the Gateway address from Section 10.2. Al
 Open the Dashboard:
 
 ***Review comment***
+
 {
 
 ```text
@@ -116,6 +119,7 @@ kubectl logs -l tekton.dev/taskRun=hello-taskrun -n cicd
 Screenshot from 2026-10-08 14-57-10
 
 ***Review comment***
+
 {
 
 In the Dashboard: Select the Namespace → `cicd` from right top corner . The Task and TaskRun are visible.  >>> comment is modified
