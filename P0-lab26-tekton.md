@@ -294,13 +294,6 @@ The YAML manifests are not pasted inline. They are stored in the repository belo
 
 ### 7.1 Access the VKS cluster
 
-***review comment***
-{ 
-- Create VKS cluster
-- Create context for the VKS cluster
-- Set VKS cluster context
-}
-
 ```bash
 vcf context list
 vcf context use <TARGET_VKS_CLUSTER_NAME>
@@ -487,7 +480,6 @@ Expected result: all Pods `Running.
 
 ### 7.7 External DNS
 
-***review comment*** {
 #### Section 7.7.1 Check available releases
 
 ```bash
@@ -497,7 +489,6 @@ vcf package available get \
   external-dns.kubernetes.vmware.com \
   -n vmware-system-tkg
 ````
-}
 
 #### 7.7.2 Create Namespace
 Create the tanzu-system-service-discovery namespace to deploy, manage External DNS and cloudflare-secret.
