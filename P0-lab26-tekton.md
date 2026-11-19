@@ -524,17 +524,8 @@ EXTERNAL_DNS_VERSION="0.20.0+vmware.1-vks.1"
 ***review comment***{ EXTERNAL_DNS_VERSION="0.22.0+vmware.1-vks.1" }
 EXTERNAL_DNS_PACKAGE="external-dns.kubernetes.vmware.com"
 ```
-
-***review comment***{ below 7.7.6.2 & 7.7.6.3 needs to be deleted as getting packages is added above in 7.7.1 
-##### 7.7.6.2 Get the Available ExternalDNS Package
  
-```bash
-vcf package available get \
-  external-dns.kubernetes.vmware.com \
-  -n vmware-system-tkg
-```
- 
-##### 7.7.6.3 Get Package Details in YAML Format
+##### 7.7.6.2 Get Package Details in YAML Format
  
 ```bash
 vcf package available get \
@@ -542,10 +533,8 @@ vcf package available get \
   -n vmware-system-tkg \
   -o yaml
 ```
-}
-
  
-##### 7.7.6.2 Export Default Values to the Values File
+##### 7.7.6.3 Export Default Values to the Values File
  
 ```bash
 vcf package available get \
@@ -553,14 +542,12 @@ vcf package available get \
   -n vmware-system-tkg \
   --default-values-file-output external-dns-values.yaml
 ```
-##### 7.7.6.3 Configure external-dns-values.yaml
+##### 7.7.6.4 Configure external-dns-values.yaml
 
 File `external-dns-values.yaml`:
 YAML: https://github.com/kondurupurandhar/ci-cd-stack-on-vks/blob/main/manifest/tekton-catalyst/external-dns-values.yaml
 
-***review comment*** { in the above link in external-dns-values.yaml file - --exclude-domains=< SUBDOMAIN_FILTER > needs to be removed ?? }
-
-##### 7.7.6.4 Perform dry-run
+##### 7.7.6.5 Perform dry-run
 ```
 vcf package install external-dns \
   -p external-dns.kubernetes.vmware.com \
@@ -570,7 +557,7 @@ vcf package install external-dns \
   --dry-run 
 ```
 
-##### 7.7.6.5 Install the ExternalDNS Package
+##### 7.7.6.6 Install the ExternalDNS Package
  
 ```bash
 vcf package install external-dns \
@@ -727,8 +714,9 @@ Expected result: `tekton-dashboard` Pod and Deployment `1/1 Running`; Service `t
 
 cert-manager uses a Cloudflare API token to complete DNS-01 challenges and verify domain ownership when requesting TLS certificates from Let's Encrypt.
 
-***review comment*** { # Update the DNS Name Eg. tekton.labX.k8slabs.com  and remove this comment from this file }
-***review comment*** { Make sure no white spaces in front of the placeholder values replaced in the file }
+ **Update the DNS Name Eg. tekton.labX.k8slabs.com  and remove this comment from this file**
+ **Make sure no white spaces in front of the placeholder values replaced in the file**
+ 
 File: https://github.com/kondurupurandhar/ci-cd-stack-on-vks/blob/main/manifest/tekton-catalyst/cloudflare-secret-cert-manager.yaml
  
 Apply: 
@@ -864,27 +852,15 @@ kubectl rollout status deployment external-dns -n tanzu-system-service-discovery
 kubectl get pods -n tanzu-system-service-discovery
 kubectl logs -n tanzu-system-service-discovery -l app=external-dns --tail=50
 ```
-***Review comment***
-
-{
-
-Below line confirms that the entries are added successfully
+Output: Below line confirms that the entries are added successfully
 
 time="2026-11-13T09:30:53Z" level=info msg="All records are already up to date"
-}
 
 Confirm the deployment name (`kubectl get deployment -n tanzu-system-service-discovery`) and whether the restart is needed in the validated sequence (TO VERIFY).
 
-***Review comment***
+Note: The DNS Entries are created auotmatically
 
-{
-Note:
-The DNS Entries are created auotmatically
-
-
-Expected result: a log line showing the record for `tekton.labX.k8slabs.com` being created or updated.    >>> LabX added
-
-}
+Expected result: a log line showing the record for `tekton.labX.k8slabs.com` being created or updated.  
 
 ### 11.2 Verify the DNS record
 
@@ -970,23 +946,13 @@ kubectl logs -l tekton.dev/taskRun=hello-taskrun -n cicd
 
 Screenshot from 2026-10-08 14-57-10
 
-***Review comment***
-
-{
-
-In the Dashboard: Select the Namespace → `cicd` from right top corner . The Task and TaskRun are visible.  >>> comment is modified
-}
+In the Dashboard: Select the Namespace → `cicd` from right top corner . The Task and TaskRun are visible.  
 
 <img width="1873" height="636" alt="Screenshot from 2026-10-08 14-57-10" src="https://github.com/user-attachments/assets/39199f3e-b49f-4af3-8c25-05d1ec498786" />
-
 
 ## 15. Installation Validation and Final Verification
 
 Run once at the end. Every line must pass.
-
-***Review comment***
-
-{
 
 | Area | Command | Expected |
 |---|---|---|
@@ -1000,8 +966,6 @@ Run once at the end. Every line must pass.
 | HTTPRoute | `kubectl describe httproute tekton-dashboard-route -n tekton-pipelines` | Accepted=True | 
 | DNS | `dig +short tekton.labX.k8slabs.com` | Gateway IP |
 | User access | Open `https://tekton.labX.k8slabs.com` | Dashboard loads |
-
-}
 
 ## 16. Tekton Pipeline Tasks
 
