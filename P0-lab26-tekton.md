@@ -265,7 +265,7 @@ In plain terms, here's why this combination makes sense:
 </table>
 
 
-Dashboard DNS name: `tekton.k8slabs.com` is the actual hostname used in this document. If several VKS labs share the `k8slabs.com` zone, confirm the name does not collide with another lab (TO VERIFY).
+Dashboard DNS name: `tekton.k8slabs.com` is the actual hostname used in this document. If several VKS labs share the `k8slabs.com` zone, confirm the name does not collide with another lab .
 ***review comment*** {remove (TO VERIFY) from above line. and decide whether the DNS name in entire document should be tekton.k8slabs.com or tekton.labX.k8slabs.com}
 
 ### 5.2 Required CLI tools
@@ -341,7 +341,6 @@ vcf package available get \
 The following version is from the source runbook. Confirm its availability in the target repository.
 ```bash
 export CERT_MANAGER_VERSION=1.19.2+vmware.1-vks.1
-***review comment***{ export CERT_MANAGER_VERSION="1.21.2+vmware.1-vks.1" }
 export CERT_MANAGER_RELEASE_NAME="cert-manager.kubernetes.vmware.com"
 ```
 
@@ -404,7 +403,6 @@ vcf package available get \
 
 ```
 export ISTIO_VERSION=1.28.2+vmware.1-vks.1
-***review comment***{ export ISTIO_VERSION="1.31.0+vmware.1-vks.1" }
 export ISTIO_RELEASE_NAME="istio.kubernetes.vmware.com"
 ```
 
@@ -521,7 +519,6 @@ kubectl apply -f cloudflare-secret.yaml
  
 ```bash
 EXTERNAL_DNS_VERSION="0.20.0+vmware.1-vks.1"
-***review comment***{ EXTERNAL_DNS_VERSION="0.22.0+vmware.1-vks.1" }
 EXTERNAL_DNS_PACKAGE="external-dns.kubernetes.vmware.com"
 ```
  
@@ -598,7 +595,6 @@ kubectl rollout restart deployment external-dns -n tanzu-system-service-discover
 kubectl rollout status deployment external-dns -n tanzu-system-service-discovery
 kubectl get pods -n tanzu-system-service-discovery
 kubectl logs -n tanzu-system-service-discovery  -l app=external-dns -f
-***review comment*** { Press Ctrl+C to exit the logs view }
 ```
 
 #### 7.7.9 Confirm HTTPRoute permissions
@@ -620,12 +616,9 @@ Expected result: `yes` for all three.
 kubectl get pods -n tanzu-system-service-discovery
 kubectl get packageinstall -n vmware-system-tkg      # run in the Supervisor context
 kubectl logs -n tanzu-system-service-discovery  -l app=external-dns -f
-***review comment*** { Press Ctrl+C to exit the logs view }
 ```
 
-Expected result: the Pod is `Running` and the logs show no errors. If the label returns nothing, check the real labels with `kubectl get pods -n tanzu-system-service-discovery --show-labels`. The old document used `app.kubernetes.io/name=external-dns` and the Istio runbook used `app=external-dns` (TO VERIFY).
-
-***review comment*** { remove (TO VERIFY) from above section}
+Expected result: the Pod is `Running` and the logs show no errors. If the label returns nothing, check the real labels with `kubectl get pods -n tanzu-system-service-discovery --show-labels`. The old document used `app.kubernetes.io/name=external-dns` and the Istio runbook used `app=external-dns`.
 
 ## 8. Install Tekton Pipelines
 
@@ -664,9 +657,7 @@ or
 kubectl apply --filename https://infra.tekton.dev/tekton-releases/pipeline/previous/v1.17.0/release.yaml
 ```
 Note: We have used tekton pipeline "v1.17.0" version
-***review comment*** {
-Note: During testing of this deployment we have used tekton pipeline "v1.17.0" version. For other versions results may vary.
-}
+
 Many resources are created (CRDs, the `tekton-pipelines` namespace, service accounts, cluster roles, controller and webhook deployments). Wait until the Pods are ready.
 
 ### 8.2 Validation: Tekton Pipelines
@@ -714,9 +705,6 @@ Expected result: `tekton-dashboard` Pod and Deployment `1/1 Running`; Service `t
 
 cert-manager uses a Cloudflare API token to complete DNS-01 challenges and verify domain ownership when requesting TLS certificates from Let's Encrypt.
 
- **Update the DNS Name Eg. tekton.labX.k8slabs.com  and remove this comment from this file**
- **Make sure no white spaces in front of the placeholder values replaced in the file**
- 
 File: https://github.com/kondurupurandhar/ci-cd-stack-on-vks/blob/main/manifest/tekton-catalyst/cloudflare-secret-cert-manager.yaml
  
 Apply: 
@@ -767,14 +755,12 @@ All three resources are created in `tekton-pipelines`, the namespace of the `tek
 
 File `tekton-dashboard-certificate.yaml`
 
-***review comment*** { # Update the DNS Name Eg. tekton.labX.k8slabs.com  and remove this comment from this file }
-***review comment*** { Make sure no white spaces in front of the placeholder values replaced in the file }
 YAML: https://github.com/kondurupurandhar/ci-cd-stack-on-vks/blob/main/manifest/tekton-catalyst/tekton-dashboard-certificate.yaml
 
 | Important argument | Value |
 |---|---|
 | issuerRef | ClusterIssuer `letsencrypt-prod` |
-| dnsNames | `tekton.k8slabs.com` |              ***review comment*** {tekton.labX.k8slabs.com}
+| dnsNames | `tekton.k8slabs.com` |         
 | secretName | `tekton-dashboard-tls-cert` (created by cert-manager, used by the Gateway) |
 
 ```bash
@@ -786,15 +772,13 @@ kubectl get certificate -n tekton-pipelines     # wait for READY=True  ***review
 
 File `tekton-dashboard-gateway.yaml`:
 
-***review comment*** { # Update the DNS Name Eg. tekton.labX.k8slabs.com  and remove this comment from this file }
-***review comment*** { Make sure no white spaces in front of the placeholder values replaced in the file }
 YAML: https://github.com/kondurupurandhar/ci-cd-stack-on-vks/blob/main/manifest/tekton-catalyst/tekton-dashboard-gateway.yaml
 
 | Important argument | Value |
 |---|---|
 | gatewayClassName | `istio` |
 | Listener | HTTPS, port 443, `tls.mode: Terminate` |
-| hostname | `tekton.k8slabs.com` |            ***review comment*** {tekton.labX.k8slabs.com}
+| hostname | `tekton.k8slabs.com` |    
 | certificateRefs | Secret `tekton-dashboard-tls-cert` (from Section 10.1) |
 | allowedRoutes | Same namespace only |
 
@@ -816,14 +800,12 @@ kubectl get gateway tekton-dashboard-gateway -n tekton-pipelines \
 
 File `tekton-dashboard-httproute.yaml`:
 
-***review comment*** { # Update the DNS Name Eg. tekton.labX.k8slabs.com  and remove this comment from this file }
-***review comment*** { Make sure no white spaces in front of the placeholder values replaced in the file }
 YAML: https://github.com/kondurupurandhar/ci-cd-stack-on-vks/blob/main/manifest/tekton-catalyst/tekton-dashboard-httproute.yaml
 
 | Important argument | Value |
 |---|---|
 | parentRefs | Gateway `tekton-dashboard-gateway` |
-| hostnames | `tekton.k8slabs.com` (External DNS reads this value) |      ***review comment*** {tekton.labX.k8slabs.com}
+| hostnames | `tekton.k8slabs.com` (External DNS reads this value) |   
 | backendRefs | Service `tekton-dashboard`, port `9097` |
 
 ```bash
@@ -852,20 +834,17 @@ kubectl rollout status deployment external-dns -n tanzu-system-service-discovery
 kubectl get pods -n tanzu-system-service-discovery
 kubectl logs -n tanzu-system-service-discovery -l app=external-dns --tail=50
 ```
-Output: Below line confirms that the entries are added successfully
-
-time="2026-11-13T09:30:53Z" level=info msg="All records are already up to date"
 
 Confirm the deployment name (`kubectl get deployment -n tanzu-system-service-discovery`) and whether the restart is needed in the validated sequence (TO VERIFY).
 
 Note: The DNS Entries are created auotmatically
 
-Expected result: a log line showing the record for `tekton.labX.k8slabs.com` being created or updated.  
+Expected result: a log line showing the record for `tekton.k8slabs.com` being created or updated.  
 
 ### 11.2 Verify the DNS record
 
 ```bash
-nslookup <FQDN>       # Update Domain Name - Eg. tekton.labX.k8slabs.com
+nslookup <FQDN>       # Update Domain Name - Eg. tekton.k8slabs.com
 ```
 
 Expected result: the IP printed equals the Gateway address from Section 10.2. Also confirm in Cloudflare that the A record and its TXT ownership record exist.
@@ -874,14 +853,10 @@ Expected result: the IP printed equals the Gateway address from Section 10.2. Al
 
 Open the Dashboard:
 
-***Review comment***
-
-{
-
 ```text
-https://tekton.labX.k8slabs.com      >>> labX added
+https://tekton.k8slabs.com  
 ```
-}
+
 
 The browser must show a valid certificate and the Tekton Dashboard.
 
@@ -1417,16 +1392,6 @@ YAML: https://github.com/kondurupurandhar/ci-cd-stack-on-vks/blob/main/manifest/
 ```bash
 kubectl apply -f update-values.yaml
 ```
-{ **Change in VCF 9.1.1: Add default: <REPO_URL> under Important arguments** 
-
-Important argument:
-
-```
-YAML
-default: <REPO_URL>         # Update the REPO_URL of Manifest Repo - e.g. https://gitea.lab12.k8slabs.com/admin/k8s-manifests.git
-```
-
-}
 
 ### 16.8 Validation – Tasks
 
@@ -1444,26 +1409,6 @@ buildkit-build
 sign-image
 update-values
 ```
-{
-**Verify the Task (VCF 9.1.1 with VKS 3.8):**
-
-```
-kubectl get tasks -n cicd
-```
-Observed output:
-
-```
-NAME                AGE
-buildkit-build      2d20h
-buildpacks-phases   2d20h
-detect-build-type   2d21h
-git-clone-update    2d21h
-hello-task          2d21h
-sign-image          2d20h
-update-values       25s
-```
-}
-
 
 ## 17. Pipeline Dependencies (Storage, ConfigMap, Secrets, Service Account)
 
@@ -1483,10 +1428,7 @@ If the StorageClass has a different name in your VKS environment, replace `lab-g
 
 Create a ConfigMap named `harbor-ca-cert` in the `cicd` namespace from your Harbor / vCenter CA certificate (the key must be `ca.crt`):
 
-{ **Change in VCF 9.1.1: Explain that the Harbor certificate must be downloaded and saved as harbor-ca.crt in the current working directory (/root/) before running kubectl create configmap, otherwise it fails with 'error: error reading harbor-ca.crt: no such file or directory'.** }
-
 Download the Harbor CA certificate (ca.crt), copy it to your working directory (for example, /root/), and rename it to harbor-ca.crt before creating the ConfigMap:
-
 
 ```bash
 kubectl create configmap harbor-ca-cert \
@@ -1646,7 +1588,7 @@ kubectl get pvc -n cicd
 
 Expected result: the Pipeline exists, the PipelineRun finishes with `SUCCEEDED=True`, and the `source` and `cache` PVCs are `Bound`. You can also follow the run in the Tekton Dashboard.
 
-{ for vcf 9.1.1 
+{ For vcf 9.1.1 
 
 Needs re-verification:
 
@@ -1701,53 +1643,31 @@ Expected result: the image pulls, the signature verifies, and the SBOM attestati
 Until now the PipelineRun was started by hand with `kubectl apply`. In this section a push to the repository starts it automatically. The repository server sits on the internal lab network, so it calls the Tekton EventListener NodePort directly.
  
 ### 20.1 Lab values used in this section
- 
+
 | Item | Value |
-
 |---|---|
-
 | Namespace | `cicd` |
-
 | Pipeline | `travelportal-pipeline-values-update` |
-
 | EventListener | `travelportal-gitea-listener` |
-
 | EventListener Service | `el-travelportal-gitea-listener` (NodePort) |
-
 | Webhook port | `8080 -> 31816` (observed lab mapping) |
-
 | Node used for webhook | `10.10.92.2` |
-
 | Webhook URL | `http://10.10.92.2:31816` (observed lab URL) |
-
 | Repository server | `http://10.12.90.62` |
-
 | Repository | `http://10.12.90.62/admin/TravelPortal-lab10.git` |
-
 | Branch | `main` |
  
 ### 20.2 The Tekton Triggers objects created in this section
- 
 | Object | Name |
-
 |---|---|
-
 | ServiceAccount | `gitea-trigger-sa` |
-
 | Role | `gitea-trigger-role` |
-
 | RoleBinding | `gitea-trigger-rolebinding` |
-
 | ClusterRole | `gitea-trigger-cluster-role` |
-
 | ClusterRoleBinding | `gitea-trigger-cluster-rolebinding` |
-
 | EventListener | `travelportal-gitea-listener` |
-
 | CEL interceptor | `ClusterInterceptor` |
-
 | TriggerBinding | `travelportal-gitea-binding` |
-
 | TriggerTemplate | `travelportal-gitea-template` |
  
 The EventListener/Trigger object names retain repository terminology. The names do not change EventListener functionality; the repository endpoint used by the binding is the internal repository server.
@@ -1788,19 +1708,13 @@ For production, pin the Triggers version that is tested with your selected Tekto
  
 #### 20.3.1 Validation – Tekton Trigger
  
-***Review comment***
- 
-{
-
 ```bash
 
-kubectl get all -n tekton-pipelines       #below deployment should up and running    >>> corrected the deployment spelling
+kubectl get all -n tekton-pipelines       #below deployment should up and running 
 
 kubectl get crd | grep triggers.tekton.dev
 
 ```
-
-}
 
 Expected result:
  
@@ -1858,10 +1772,8 @@ File `gitea-trigger-sa.yaml`:
  
 YAML: https://github.com/kondurupurandhar/ci-cd-stack-on-vks/blob/main/manifest/tekton-catalyst/gitea-trigger-sa.yaml
  
-| Important argument | Value |
-
+| Important Argument | Value |
 |---|---|
-
 | ServiceAccount | `gitea-trigger-sa` in `cicd` |
  
 ```bash
@@ -1878,14 +1790,10 @@ YAML: https://github.com/kondurupurandhar/ci-cd-stack-on-vks/blob/main/manifest/
  
 File `gitea-trigger-role.yaml` contains the Role (`repository-trigger-rol`), RoleBinding (`gitea-trigger-rolebinding.yaml`), ClusterRole (`gitea-trigger-cluster-role.yaml`) and ClusterRoleBinding (`gitea-trigger-cluster-rolebinding.yaml`).
  
-| Important argument | Meaning |
-
+| Important Argument | Meaning |
 |---|---|
-
 | Role (namespace `cicd`) | Read `triggerbindings`, `triggertemplates`, `eventlisteners`; create `pipelineruns` |
-
 | ClusterRole | Read `clusterinterceptors`, `clustertriggerbindings` |
-
 | Subject | ServiceAccount `gitea-trigger-sa` |
  
 ```bash
@@ -1950,16 +1858,11 @@ File `travelportal-gitea-binding.yaml`:
  
 YAML: https://github.com/kondurupurandhar/ci-cd-stack-on-vks/blob/main/manifest/tekton-catalyst/travelportal-gitea-binding.yaml
  
-| Important argument | Value |
-
+| Important Argument | Value |
 |---|---|
-
 | Name | `travelportal-gitea-binding` |
-
 | `REPO_URL` | `http://10.12.90.62/admin/travelPortal-test-buildpack.git` |
-
 | `REVISION` | `main` |
-
 | Payload fields read | `body.ref`, `body.after`, `body.head_commit.message` |
  
 ```bash
@@ -1974,20 +1877,13 @@ File `travelportal-gitea-template.yaml`:
  
 YAML: https://github.com/kondurupurandhar/ci-cd-stack-on-vks/blob/main/manifest/tekton-catalyst/travelportal-gitea-template.yaml
  
-| Important argument | Value |
-
+| Important Argument | Value |
 |---|---|
-
 | Name | `travelportal-gitea-template` |
-
 | `pipelineRef` | `travelportal-pipeline-values-update` |
-
 | `serviceAccountName` | `tekton-pipeline-sa` |
-
 | Repository URL | `http://10.12.90.62/admin/travelPortal-test-buildpack.git` |
-
 | PipelineRun name | `travelportal-build-xxxxx` (generated) |
-
 | Workspaces | Per-run `source` and `cache` PVCs from StorageClass `lab-gold-storage-policy` |
  
 ```bash
@@ -2002,29 +1898,14 @@ File `travelportal-gitea-listener.yaml`:
  
 YAML: https://github.com/kondurupurandhar/ci-cd-stack-on-vks/blob/main/manifest/tekton-catalyst/travelportal-gitea-listener.yaml
  
-| Important argument | Value |
-
+| Important Argument | Value |
 |---|---|
-
 | Name | `travelportal-gitea-listener` |
-
 | `serviceAccountName` | `gitea-trigger-sa` |
-
 | Interceptor | Cluster-scoped `cel` interceptor (main branch only, ignores CI commits) |
-
 | Binding / Template | `travelportal-gitea-binding` / `travelportal-gitea-template` |
-
 | `serviceType` | `NodePort` |
-
-| Application port | `8080` (observed NodePort in this lab: `31877`) |
- 
-***Review comment***
- 
-{
- 
-Note: The manifest specifies only serviceType: NodePort, Kubernetes may assign a different NodePort in another environment, so always confirm the actual value in the validation table above.
-
-}
+| Application Port | `8080` (observed NodePort in this lab: `31877`) |
  
 ```bash
 
@@ -2114,7 +1995,7 @@ Then check:
  
 ```
 
-kubectl get svc el-travelportal-gitea-listener -n cicd  >>> removed -w 
+kubectl get svc el-travelportal-gitea-listener -n cicd  
 
 ```
 
@@ -2130,63 +2011,13 @@ el-travelportal-gitea-listener   NodePort   198.54.22.125   <none>        8080:3
 
 ```
 
-***Review comment***
- 
-{
-
-2. Retrieve the Kubernetes Node IP
-
-##2.1 Identify the Node Running the EventListener Pod
- 
-```bash
-
-kubectl get pods -n cicd -o wide
-
-```
- 
-Expected Output:
- 
-NAME                                              READY   STATUS      RESTARTS   AGE     IP             NODE                                  NOMINATED NODE   READINESS GATES
-
-el-travelportal-gitea-listener-685c6467d9-2jjpl   1/1     Running     0          9m35s   192.168.2.21   vkc11-node-pool-1-tmqkh-6rxnm-d2jlb   <none>           <none>
-
-hello-taskrun-pod                                 0/1     Completed   0          3d2h    192.168.3.27   vkc11-node-pool-1-tmqkh-6rxnm-7wjsp   <none>           <none>
-
-Url of eventlistner
- 
-From the output, identify the node running the EventListener Pod
- 
-##2.2 Retrieve the Node IP Address
- 
-```bash
- 
-kubectl get node vkc11-node-pool-1-tmqkh-6rxnm-d2jlb -o wide
-
-```
-
-Output:
- 
-NAME                                  STATUS   ROLES    AGE    VERSION            INTERNAL-IP   EXTERNAL-IP   OS-IMAGE             KERNEL-VERSION             CONTAINER-RUNTIME
-
-vkc11-node-pool-1-tmqkh-6rxnm-d2jlb   Ready    <none>   4d4h   v1.37.1+vmware.4   10.11.92.2    <none>        Ubuntu 24.04.5 LTS   7.0.0-38-generic (amd64)   containerd://2.4.0+vmware.2-fips
- 
-Use This IP and Nodeport to access
- 
-}
+2. URL of Eventlistener
  
 ```
 http://<NODE-IP>:<NODEPORT>
 http://<NODE-IP>:31234
 
 ```
- 
-***Review comment
- 
-{
-
-A working EventListener returns `HTTP/1.1 202 Accepted` with a Tekton event ID. This proves the path jumpbox → NodePort → EventListener works, and a new `travelportal-build-xxxxx` PipelineRun appears.
- 
-}     >>> Need to delete the below section because getting `HTTP/1.1 202 Accepted` this output but everything works fine.
  
 Verify the Eventlistener URL is reachable
  
@@ -2198,32 +2029,13 @@ curl -v  http://<NODE-IP>:<NODEPORT>
  
 ### 20.8 Add the webhook in the repository
  
-***Review comment***
  
-{
- 
-Repository: gitea repo (source code)                 >>> Added the gitea repo to be used
+Repository:  
  
 ```text
 http://10.12.90.62/admin/TravelPortal-lab10.git
 
 ```
-
-}
- 
-***Review comment***
- 
-{
-
-This needs to be done on Gitea GUI
- 
-In source code repo
- 
-Use This Secret :  "Secrets	gitea-webhook-secret"
- 
-Note:  Need to add the Secret value generated in Section 20.4
- 
-}
 
 Open:
  
@@ -2242,19 +2054,12 @@ Repository
 Use:
  
 | Setting | Value |
-
 |---|---|
-
 | Target URL | `http://<NODE-IP>:<NODEPORT>` |
-
 | Method | `POST` |
-
 | Content type | `application/json` |
-
 | Event | Push events |
-
 | Branch | `main` |
-
 | Secrets | `gitea-webhook-secret` |
  
 Save the webhook.
@@ -2293,15 +2098,9 @@ kubectl get pipelineruns -n cicd -w
 
 ```
  
-***Review comment***         >>> Need to be deleted as unexpected output from above Two commands
- 
-{
-
 Expected result:
  
 ```text
-
-Webhook delivery   → HTTP 202 Accepted
 
 New PipelineRun    → travelportal-build-xxxxx
 
@@ -2314,8 +2113,6 @@ Self-trigger       → no second PipelineRun after the CI commit
 Harbor             → image digest signed, SBOM attestation present
 
 ```
-
-}
  
 ## 22. Conclusion
  
